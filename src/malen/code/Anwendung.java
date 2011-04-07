@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.EmbeddedObjectContainer;
+import com.db4o.config.EmbeddedConfiguration;
 
 public class Anwendung {
 
@@ -19,8 +20,12 @@ public class Anwendung {
 	}
 
 	public static void main(String[] aString) {
-		final EmbeddedObjectContainer db = Db4oEmbedded.openFile(
-				Db4oEmbedded.newConfiguration(), "malen.db40");
+		EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
+		config.common().objectClass(Zeichnung.class).cascadeOnUpdate(true);
+		config.common().objectClass(Zeichnung.class).cascadeOnDelete(true);
+
+		final EmbeddedObjectContainer db = Db4oEmbedded.openFile(config,
+				"malen.db40");
 
 		JFrame f = new JFrame("Malen");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,7 +36,7 @@ public class Anwendung {
 				super.windowClosing(e);
 			}
 		});
-		
+
 		Malen m = new Malen(db);
 		m.setBehaelter(f.getContentPane());
 		m.init();
