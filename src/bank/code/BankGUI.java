@@ -662,7 +662,7 @@ public class BankGUI {
 					try {
 						if (getBank() != null) {
 							Konto k = getBank().newGiroKonto(s, s2);
-							db.store(getBank());
+							getDB().store(getBank());
 							t.setText("");
 							t2.setText("");
 							getKontoAuswahl().addItem(k);
@@ -719,7 +719,7 @@ public class BankGUI {
 					try {
 						if (getBank() != null) {
 							Konto k = getBank().newSparKonto(s, s2);
-							db.store(getBank());
+							getDB().store(getBank());
 							t31.setText("");
 							t32.setText("");
 							getKontoAuswahl().addItem(k);
@@ -785,7 +785,7 @@ public class BankGUI {
 					try {
 						if (getBank() != null) {
 							Konto k = getBank().newSuperSparKonto(s, s2, s3);
-							db.store(getBank());
+							getDB().store(getBank());
 							t41.setText("");
 							t42.setText("");
 							t43.setText("");
