@@ -2,6 +2,9 @@ package bank.code;
 
 import java.util.*;
 import javax.swing.*;
+import com.db4o.Db4oEmbedded;
+import com.db4o.EmbeddedObjectContainer;
+import com.db4o.ObjectSet;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -49,13 +52,24 @@ public class BankGUI {
 
 	private String kontoArt;
 
+	private EmbeddedObjectContainer db;
+
 	// Constructors and Operations:
 	public final java.util.List<Bank> getBanken() {
+		ObjectSet<Bank> results = getDB().query(Bank.class);
+		ArrayList<Bank> banken = new ArrayList<Bank>();
+		for (Bank bank : results) {
+			banken.add(bank);
+		}
 		return banken;
 	}
 
-	private final void setBanken(java.util.List<Bank> banken) {
-		this.banken = banken;
+	public final void setDB(EmbeddedObjectContainer db) {
+		this.db = db;
+	}
+
+	public final EmbeddedObjectContainer getDB() {
+		return db;
 	}
 
 	public final Bank getBank() {
@@ -218,8 +232,9 @@ public class BankGUI {
 		this.kontoArt = kontoArt;
 	}
 
-	public BankGUI(java.util.List<Bank> banken) {
-		setBanken(banken);
+	public BankGUI(EmbeddedObjectContainer db) {
+		setDB(db);
+
 		if (getBanken().size() > 0) {
 			setBank(getBanken().get(0));
 			if (getBank().numKonto() > 0)
@@ -227,7 +242,13 @@ public class BankGUI {
 		}
 
 		setJFrame(new JFrame("Bankanwendung"));
-		getJFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getJFrame().addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				getDB().close();
+				System.exit(0);
+			}
+		});
 		Container jp = getJFrame().getContentPane();
 		jp.setLayout(new BorderLayout());
 
@@ -278,6 +299,7 @@ public class BankGUI {
 		getAuswahl().add(knopf);
 		knopf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
+				getDB().close();
 				System.exit(0);
 			}
 		});
@@ -289,6 +311,8 @@ public class BankGUI {
 		knopf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				getBank().rmvKonto(getKonto());
+				getDB().delete(getKonto());
+				getDB().store(getBank());
 				getKontoAuswahl().removeItem(getKonto());
 			}
 		});
@@ -297,15 +321,16 @@ public class BankGUI {
 	public void machBankLoeschknopf() {
 		JButton knopf = new JButton("aktuelle Bank löschen");
 		getAuswahl().add(knopf);
+
 		knopf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				int k;
 				while ((k = getBank().numKonto() - 1) >= 0) {
 					Konto ko = getBank().getKonto(k);
-					getBank().rmvKonto(k);
+					getDB().delete(k);
 					getKontoAuswahl().removeItem(ko);
 				}
-				getBanken().remove(getBank());
+				getDB().delete(getBank());
 				getBankAuswahl().removeItem(getBank());
 				if (getBanken().size() == 0)
 					setBank(null);
@@ -637,6 +662,7 @@ public class BankGUI {
 					try {
 						if (getBank() != null) {
 							Konto k = getBank().newGiroKonto(s, s2);
+							db.store(getBank());
 							t.setText("");
 							t2.setText("");
 							getKontoAuswahl().addItem(k);
@@ -693,6 +719,7 @@ public class BankGUI {
 					try {
 						if (getBank() != null) {
 							Konto k = getBank().newSparKonto(s, s2);
+							db.store(getBank());
 							t31.setText("");
 							t32.setText("");
 							getKontoAuswahl().addItem(k);
@@ -758,6 +785,7 @@ public class BankGUI {
 					try {
 						if (getBank() != null) {
 							Konto k = getBank().newSuperSparKonto(s, s2, s3);
+							db.store(getBank());
 							t41.setText("");
 							t42.setText("");
 							t43.setText("");
