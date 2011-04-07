@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.db4o.EmbeddedObjectContainer;
+
 public class Malen implements MouseListener, MouseMotionListener {
 
 	private Container behaelter;
@@ -61,6 +63,8 @@ public class Malen implements MouseListener, MouseMotionListener {
 	private Grafle aktuellesGrafle = getGrafle(0);
 
 	private Zeichnung[] aZeichnung;
+
+	private EmbeddedObjectContainer db;
 	{
 		setZeichnung(new Zeichnung[0]);
 	}
@@ -278,7 +282,16 @@ public class Malen implements MouseListener, MouseMotionListener {
 		setZeichnung(x);
 	}
 
-	public Malen() {
+	public Malen(EmbeddedObjectContainer db) {
+		setDB(db);
+	}
+
+	private void setDB(EmbeddedObjectContainer db) {
+		this.db = db;
+	}
+	
+	private EmbeddedObjectContainer getDB() {
+		return this.db;
 	}
 
 	public void init() {
@@ -371,6 +384,7 @@ public class Malen implements MouseListener, MouseMotionListener {
 		getMenue().add(ek);
 		ek.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				getDB().close();
 				System.exit(0);
 			}
 		});
