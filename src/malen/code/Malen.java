@@ -65,9 +65,7 @@ public class Malen implements MouseListener, MouseMotionListener {
 	private Zeichnung[] aZeichnung;
 
 	private EmbeddedObjectContainer db;
-	{
-		setZeichnung(new Zeichnung[0]);
-	}
+
 
 	// Constructors and Operations:
 	public final Container getBehaelter() {
@@ -217,11 +215,7 @@ public class Malen implements MouseListener, MouseMotionListener {
 	}
 
 	public final Zeichnung[] getZeichnung() {
-		return aZeichnung;
-	}
-
-	private final void setZeichnung(Zeichnung[] aZeichnung) {
-		this.aZeichnung = aZeichnung;
+		return getDB().query(Zeichnung.class).toArray(new Zeichnung[] {});
 	}
 
 	public final int numZeichnung() {
@@ -229,57 +223,21 @@ public class Malen implements MouseListener, MouseMotionListener {
 	}
 
 	private final void addZeichnung(Zeichnung aZeichnung) {
-		Zeichnung[] x = getZeichnung();
-		Zeichnung[] y = new Zeichnung[x.length + 1];
-		System.arraycopy(x, 0, y, 0, x.length);
-		y[x.length] = aZeichnung;
-		setZeichnung(y);
+		getDB().store(aZeichnung);
 	}
 
 	private final void addZeichnung(Zeichnung[] aZeichnung) {
-		Zeichnung[] x = getZeichnung();
-		Zeichnung[] y = new Zeichnung[x.length + aZeichnung.length];
-		System.arraycopy(x, 0, y, 0, x.length);
-		System.arraycopy(x, 0, y, x.length, aZeichnung.length);
-		setZeichnung(y);
-	}
-
-	private final void rmvZeichnung(Zeichnung aZeichnung) {
-		int ii = -1;
-		boolean suchen = true;
-		while (suchen) {
-			int n = numZeichnung();
-			for (int i = 0; i < n; i++) {
-				if (aZeichnung == getZeichnung(i)) {
-					ii = i;
-					break;
-				}
-			}
-			if (ii >= 0) {
-				rmvZeichnung(ii);
-				ii = -1;
-			} else {
-				suchen = false;
-			}
+		for (Zeichnung zeichnung : aZeichnung) {
+			getDB().store(zeichnung);
 		}
 	}
 
-	private final void rmvZeichnung(int i) {
-		Zeichnung[] x = getZeichnung();
-		Zeichnung[] y = new Zeichnung[x.length - 1];
-		System.arraycopy(x, 0, y, 0, i);
-		System.arraycopy(x, i + 1, y, i, y.length - i);
-		setZeichnung(y);
+	private final void rmvZeichnung(Zeichnung aZeichnung) {
+		getDB().delete(aZeichnung);
 	}
 
 	public final Zeichnung getZeichnung(int i) {
 		return getZeichnung()[i];
-	}
-
-	private final void setZeichnung(int i, Zeichnung aZeichnung) {
-		Zeichnung[] x = getZeichnung();
-		x[i] = aZeichnung;
-		setZeichnung(x);
 	}
 
 	public Malen(EmbeddedObjectContainer db) {
@@ -558,7 +516,7 @@ public class Malen implements MouseListener, MouseMotionListener {
 		getManag().add(up);
 		up.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// ???
+				getDB().store(getAktuelleZeichnung());
 			}
 		});
 	}
