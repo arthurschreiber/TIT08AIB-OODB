@@ -15,7 +15,7 @@ public class Anwendung {
 
 	public static void main(String[] aString) {
 		EmbeddedObjectContainer db = Db4oEmbedded.openFile(
-				Db4oEmbedded.newConfiguration(), "../banken.db4o");
+				Db4oEmbedded.newConfiguration(), "banken.db4o");
 
 		// Bank bank = new Bank("BA-Bank", "53827298");
 		//
