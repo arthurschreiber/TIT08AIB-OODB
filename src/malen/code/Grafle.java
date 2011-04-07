@@ -1,22 +1,15 @@
 package malen.code;
-import	java.awt.*;
 
-public interface	Grafle
-	{
+import java.awt.*;
 
-	void	zeichne (Graphics aGraphics);
+public interface Grafle {
 
-	Grafle	newGrafle
-		(
-		int	xa,
-		int	ya,
-		int	xe,
-		int	ye,
-		Color	aColor
-		);
+	void zeichne(Graphics aGraphics);
 
-	String	toString ();
+	Grafle newGrafle(int xa, int ya, int xe, int ye, Color aColor);
 
-	Grafle	kopie ();
+	String toString();
 
-	}	//	end Grafle
+	Grafle kopie();
+
+} // end Grafle
